@@ -1,0 +1,9 @@
+@use './vars.scss' as *;
+
+@forward './reset.scss';
+
+body {
+  background: $bg-main-color;
+  color: $text-color;
+  font-family: $font-family-base;
+}

@@ -1,0 +1,21 @@
+@use '../../../../style/vars.scss' as *;
+
+.tickets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &-btn-show-more {
+    border-radius: 5px;
+    width: 100%;
+    height: 50px;
+    background-color: $button-active-color;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+}
