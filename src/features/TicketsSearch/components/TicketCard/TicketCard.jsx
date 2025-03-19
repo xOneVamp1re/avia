@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types'
+
 import { TicketCardInfo } from './TicketCardInfo'
 import styles from './TicketCard.module.scss'
 
@@ -24,3 +26,7 @@ const TicketCard = ({ ticket }) => {
 }
 
 export default TicketCard
+
+TicketCard.propTypes = {
+  ticket: PropTypes.object,
+}
