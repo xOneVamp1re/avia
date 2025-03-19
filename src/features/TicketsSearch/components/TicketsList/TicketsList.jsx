@@ -1,24 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { ticketsSlice, selectFilteredTicketsData } from '../../slices/ticketsData.slice'
+import { selectSortedTickets } from '../../slices/ticketsData.slice'
 import TicketCard from '../TicketCard/TicketCard'
 
 import styles from './TicketsList.module.scss'
 
 const TicketsList = () => {
   const [visibleTickets, setVisibleTickets] = useState(5)
-  // const tickets = useSelector(ticketsSlice.selectors.selectTicketsData)
-  const filteredTickets = useSelector(selectFilteredTicketsData)
-  console.log(filteredTickets)
+  const sortedTickets = useSelector(selectSortedTickets)
+
   const loadMoreTickets = () => {
     setVisibleTickets((prev) => prev + 5)
   }
 
-  return (
+  return sortedTickets.length > 0 ? (
     <>
       <ul className={styles['tickets-list']}>
-        {filteredTickets.slice(0, visibleTickets).map((ticket) => {
+        {sortedTickets.slice(0, visibleTickets).map((ticket) => {
           return <TicketCard key={ticket.id} ticket={ticket}></TicketCard>
         })}
       </ul>
@@ -26,6 +25,8 @@ const TicketsList = () => {
         Показать еще 5 билетов
       </button>
     </>
+  ) : (
+    <p className={styles['tickets-list-not-results']}>Билетов по вашему запросу не найдено.</p>
   )
 }
 

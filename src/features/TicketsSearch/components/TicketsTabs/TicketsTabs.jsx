@@ -1,8 +1,7 @@
-import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { setActiveTab, selectActiveTab, selectSortedData } from '../../slices/filtersTickets.slice'
-import { selectIsFetchDataFulfilled, selectIsLoading } from '../../slices/ticketsData.slice'
+import { setActiveTab, selectActiveTab } from '../../slices/filtersTickets.slice'
+import { selectIsLoading } from '../../slices/ticketsData.slice'
 import TicketsList from '../TicketsList/TicketsList'
 import { Loader } from '../../../../shared/ui/components/loader'
 
@@ -18,10 +17,6 @@ const TicketsTabs = () => {
   const dispatch = useDispatch()
   const activeTab = useSelector(selectActiveTab)
   const loading = useSelector(selectIsLoading)
-
-  useEffect(() => {
-    dispatch(selectSortedData())
-  }, [activeTab, loading])
 
   return (
     <div className={styles.tabs}>
@@ -50,15 +45,7 @@ const TicketsTabs = () => {
           )
         })}
       </ul>
-      {loading ? (
-        <Loader className={styles['tabs-list-loader']} />
-      ) : (
-        <>
-          {activeTab === 'cheapest' && <TicketsList />}
-          {activeTab === 'fastest' && <TicketsList />}
-          {activeTab === 'optimal' && <TicketsList />}
-        </>
-      )}
+      {loading ? <Loader className={styles['tabs-list-loader']} /> : <TicketsList />}
     </div>
   )
 }
