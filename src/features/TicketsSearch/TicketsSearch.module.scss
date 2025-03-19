@@ -1,12 +1,12 @@
 .logo {
-  margin: 0 auto;
   display: block;
+  margin: 0 auto;
   padding: 50px 0;
 }
 
 .main {
   display: flex;
+  align-items: flex-start;
   justify-content: center;
   gap: 20px;
-  align-items: flex-start;
 }

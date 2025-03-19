@@ -8,26 +8,31 @@
 
   &-list {
     display: flex;
+
     &-btn {
-      border: 1px solid #dfe5ec;
-      padding: 15px;
       width: 170px;
-      text-transform: uppercase;
+      padding: 15px;
+      border: 1px solid #dfe5ec;
       font-size: 14px;
       font-weight: 600;
-      line-height: 20px;
       letter-spacing: 0.5px;
+      line-height: 20px;
+      text-transform: uppercase;
     }
+
     &-btn-active {
-      border: 1px solid $button-active-color;
+      border: 1px solid #2196f3;
       background-color: $button-active-color;
     }
+
     &-btn-first {
       border-radius: 10px 0 0 10px;
     }
+
     &-btn-last {
-      border-radius: 0 10px 10px 0px;
+      border-radius: 0 10px 10px 0;
     }
+
     &-loader {
       align-self: center;
     }
