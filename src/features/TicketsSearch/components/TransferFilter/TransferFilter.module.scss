@@ -29,11 +29,15 @@
       cursor: pointer;
       display: flex;
       justify-content: flex-start;
-      column-gap: 10px;
       align-items: center;
       &-checkbox {
         width: 20px;
         height: 20px;
+        cursor: pointer;
+      }
+      &-label {
+        padding-left: 10px;
+        user-select: none;
       }
     }
   }

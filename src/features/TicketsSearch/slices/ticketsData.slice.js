@@ -1,17 +1,11 @@
 import { v4 as uuidv4 } from 'uuid'
+import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
 
-import { createSlice, createEntityAdapter, createSelector, createAsyncThunk } from '@reduxjs/toolkit'
-
-const ticketAdapter = createEntityAdapter({
-  selectId: (ticket) => ticket.id,
-})
-
-const initialState = ticketAdapter.getInitialState({})
+import { selectCheckboxes, selectActiveTab } from './filtersTickets.slice'
 
 const initialTicketsData = {
   entities: {
     tickets: [],
-    filteredTickets: [],
     searchComplete: false,
   },
   searchId: null,
@@ -66,9 +60,6 @@ export const ticketsSlice = createSlice({
     setTicketsData: (state, action) => {
       state.entities.tickets = action.payload
     },
-    setFilteredTickets: (state, action) => {
-      state.entities.filteredTickets = action.payload
-    },
     setIsLoading: (state, action) => {
       state.isLoading = action.payload
     },
@@ -79,7 +70,7 @@ export const ticketsSlice = createSlice({
     }),
       builder.addCase(fetchTicketsById.fulfilled, (state, action) => {
         state.fetchDataStatus = 'fulfilled'
-        state.entities.tickets = action.payload.tickets
+        state.entities.tickets = [...state.entities.tickets, ...action.payload.tickets]
         state.entities.searchComplete = action.payload.stop
         state.isLoading = false
       }),
@@ -102,55 +93,78 @@ export const ticketsSlice = createSlice({
   selectors: {
     selectIsFetchDataIdIdle: (state) => state.fetchDataIdStatus === 'idle',
     selectIsFetchDataIdPending: (state) => state.fetchDataIdStatus === 'pending',
+
     selectIsFetchDataIdle: (state) => state.fetchDataStatus === 'idle',
     selectIsFetchDataPending: (state) => state.fetchDataStatus === 'pending',
+
     selectIsFetchDataIdFulfilled: (state) => state.fetchDataStatus === 'fulfilled',
     selectIsFetchDataFulfilled: (state) => state.fetchDataStatus === 'fulfilled',
-    selectData: (state) => state,
+
     selectTicketsSearchId: (state) => state.searchId,
     selectTicketsSearchComplete: (state) => state.entities.searchComplete,
     selectTicketsData: (state) => state.entities.tickets,
     selectIsLoading: (state) => state.isLoading,
-    /* selectFilteredTicketsData: createSelector(
-      (state) => state.entities.tickets,
-      (_, tab) => tab,
-
-      (tickets, tab) =>
-        tickets.toSorted((a, b) => {
-          if (tab === 'cheapest') return a.price - b.price
-          if (tab === 'fastest') {
-            const [outboundSegmentA, returnSegmentA] = a.segments
-            const [outboundSegmentB, returnSegmentB] = b.segments
-            return (
-              outboundSegmentA.duration +
-              returnSegmentA.duration -
-              (outboundSegmentB.duration + returnSegmentB.duration)
-            )
-          }
-          if (tab === 'optimal') {
-            const [outboundSegmentA, returnSegmentA] = a.segments
-            const [outboundSegmentB, returnSegmentB] = b.segments
-            const priceDifference = a.price - b.price
-            if (priceDifference !== 0) {
-              return priceDifference
-            }
-            return (
-              outboundSegmentA.duration +
-              returnSegmentA.duration -
-              (outboundSegmentB.duration + returnSegmentB.duration)
-            )
-          }
-        })
-    ), */
-    selectFilteredTicketsData: (state) => state.entities.filteredTickets,
   },
 })
 
 export const selectIsFetchDataFulfilled = ticketsSlice.selectors.selectIsFetchDataFulfilled
 export const selectIsLoading = ticketsSlice.selectors.selectIsLoading
 export const selectTicketsData = ticketsSlice.selectors.selectTicketsData
-export const selectFilteredTicketsData = ticketsSlice.selectors.selectFilteredTicketsData
 
 export const setTicketsData = ticketsSlice.actions.setTicketsData
-export const setFilteredTickets = ticketsSlice.actions.setFilteredTickets
 export const setIsLoading = ticketsSlice.actions.setIsLoading
+
+export const selectFilteredTickets = createSelector(
+  [selectTicketsData, selectCheckboxes],
+  (ticketsData, checkboxes) => {
+    return ticketsData.filter((ticket) => {
+      if (checkboxes.all) return true
+
+      const isAnyCheckboxesDisable = Object.values(checkboxes).some((value) => value)
+      if (!isAnyCheckboxesDisable) return false
+
+      const [outboundSegment, returnSegment] = ticket.segments
+      const outboundTransfers = outboundSegment.stops.length
+      const returnTransfers = returnSegment.stops.length
+      const { withoutTransfers, oneTransfers, twoTransfers, threeTransfers } = checkboxes
+
+      const transferConditions = [
+        { active: withoutTransfers, count: 0 },
+        { active: oneTransfers, count: 1 },
+        { active: twoTransfers, count: 2 },
+        { active: threeTransfers, count: 3 },
+      ]
+
+      return transferConditions.some(({ active, count }) => {
+        if (!active) return false
+        return (
+          (outboundTransfers === count && returnTransfers <= count) ||
+          (returnTransfers === count && outboundTransfers <= count)
+        )
+      })
+    })
+  }
+)
+
+export const selectSortedTickets = createSelector([selectFilteredTickets, selectActiveTab], (filteredTickets, tab) => {
+  return filteredTickets.toSorted((a, b) => {
+    const [outboundSegmentA, returnSegmentA] = a.segments
+    const [outboundSegmentB, returnSegmentB] = b.segments
+
+    const totalDurationA = outboundSegmentA.duration + returnSegmentA.duration
+    const totalDurationB = outboundSegmentB.duration + returnSegmentB.duration
+
+    switch (tab) {
+      case 'cheapest':
+        return a.price - b.price
+      case 'fastest':
+        return totalDurationA - totalDurationB
+      case 'optimal': {
+        const priceDiff = a.price - b.price
+        return priceDiff !== 0 ? priceDiff : totalDurationA - totalDurationB
+      }
+      default:
+        return 0
+    }
+  })
+})

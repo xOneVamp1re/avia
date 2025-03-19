@@ -1,34 +1,47 @@
-import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { toggleCheckboxes, toggleAllCheckboxes, selectCheckboxes } from '../../slices/filtersTickets.slice'
 
 import styles from './TransferFilter.module.scss'
 
 const TransferFilter = () => {
-  const TransferFilterOptions = [
-    { value: 'Все', label: 'all' },
-    { value: 'Без пересадок', label: 'withoutTransfers' },
-    { value: '1 пересадка', label: 'oneTransfers' },
-    { value: '2 пересадки', label: 'twoTransfers' },
-    { value: '3 пересадки', label: 'threeTransfers' },
+  const transferOptions = [
+    { label: 'Все', value: 'all' },
+    { label: 'Без пересадок', value: 'withoutTransfers' },
+    { label: '1 пересадка', value: 'oneTransfers' },
+    { label: '2 пересадки', value: 'twoTransfers' },
+    { label: '3 пересадки', value: 'threeTransfers' },
   ]
-  const [filterOptions, setFilterOptions] = useState(TransferFilterOptions)
-  const [selectedFilter, setSelectedFilter] = useState([])
+  const dispatch = useDispatch()
+  const checkboxes = useSelector(selectCheckboxes)
+
+  const handleCheckboxClick = (value) => {
+    if (value === 'all') {
+      dispatch(toggleAllCheckboxes())
+    } else {
+      dispatch(toggleCheckboxes(value))
+    }
+  }
   return (
     <fieldset className={styles['transfer-filter']}>
       <h5 className={styles['transfer-filter-title']}>Количество пересадок</h5>
       <ul className={styles['transfer-filter-list']}>
-        {filterOptions.map((option) => {
-          const id = `transfer-filter-${option.label}`
+        {transferOptions.map((option) => {
+          const id = `transfer-filter-${option.value}`
           return (
-            <li key={option.label} className={styles['transfer-filter-list-item']}>
+            <li key={id} className={styles['transfer-filter-list-item']}>
               <input
                 className={styles['transfer-filter-list-item-checkbox']}
                 id={id}
-                value={option.value}
-                // onChange={() => handleFilterChange(option.value)}
+                onChange={() => handleCheckboxClick(option.value)}
                 type="checkbox"
+                checked={checkboxes[option.value]}
               />
-              <label htmlFor={id} className={selectedFilter ? 'active' : ''}>
-                {option.value}
+              <label
+                htmlFor={id}
+                className={styles['transfer-filter-list-item-label']} /* className={selectedFilter ? 'active' : ''} */
+              >
+                {option.label}
               </label>
             </li>
           )
