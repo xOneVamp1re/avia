@@ -10,6 +10,7 @@ import styles from './TransferFilter.module.scss'
 
 const TransferFilter = () => {
   const { width } = useWindowSize()
+
   const [isOpen, setIsOpen] = useState(false)
 
   const listRef = useRef(null)
