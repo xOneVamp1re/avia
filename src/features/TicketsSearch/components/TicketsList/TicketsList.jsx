@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { selectSortedTickets } from '../../slices/ticketsData.slice'
+import { selectSortedTickets, selectIsError } from '../../slices/ticketsData.slice'
+import checkForErrors from '../../../../shared/utils/checkForErrors'
 import TicketCard from '../TicketCard/TicketCard'
 
 import styles from './TicketsList.module.scss'
@@ -9,12 +10,13 @@ import styles from './TicketsList.module.scss'
 const TicketsList = () => {
   const [visibleTickets, setVisibleTickets] = useState(5)
   const sortedTickets = useSelector(selectSortedTickets)
+  const isError = useSelector(selectIsError)
 
   const loadMoreTickets = () => {
     setVisibleTickets((prev) => prev + 5)
   }
 
-  return sortedTickets.length > 0 ? (
+  return sortedTickets.length > 0 && !isError ? (
     <>
       <ul className={styles['tickets-list']}>
         {sortedTickets.slice(0, visibleTickets).map((ticket) => {
@@ -25,6 +27,8 @@ const TicketsList = () => {
         Показать еще 5 билетов
       </button>
     </>
+  ) : isError ? (
+    <p className={styles['tickets-list-not-results']}>{checkForErrors(isError)}</p>
   ) : (
     <p className={styles['tickets-list-not-results']}>Билетов по вашему запросу не найдено.</p>
   )

@@ -1,3 +1,1 @@
-Ссылка на деплой - https://movieapp-nine-blond.vercel.app/
-
-Без внпа не работает :c
+Ссылка на деплой - https://avia-git-master-alex-lyadniks-projects.vercel.app/

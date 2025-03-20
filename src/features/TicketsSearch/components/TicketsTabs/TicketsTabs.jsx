@@ -4,6 +4,7 @@ import { setActiveTab, selectActiveTab } from '../../slices/filtersTickets.slice
 import { selectIsLoading } from '../../slices/ticketsData.slice'
 import TicketsList from '../TicketsList/TicketsList'
 import { Loader } from '../../../../shared/ui/components/loader'
+import { ProgressBar } from '../ProgressBar/progressBar'
 
 import styles from './TicketsTabs.module.scss'
 
@@ -45,6 +46,7 @@ const TicketsTabs = () => {
           )
         })}
       </ul>
+      <ProgressBar duration={5000} />
       {loading ? <Loader className={styles['tabs-list-loader']} /> : <TicketsList />}
     </div>
   )

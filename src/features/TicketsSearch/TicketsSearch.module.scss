@@ -4,9 +4,22 @@
   padding: 50px 0;
 }
 
-.main {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 20px;
+@media (width >= 319.98px) {
+  .main {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    margin: 0 16px;
+    gap: 10px;
+  }
+}
+
+@media (width >= 767.98px) {
+  .main {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 20px;
+  }
 }

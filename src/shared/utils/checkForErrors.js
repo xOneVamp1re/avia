@@ -52,17 +52,19 @@ const checkForErrors = (error) => {
     },
   ]
 
-  for (const { status_code, message, info } of errorsData) {
-    if (status_code === error.status) {
-      const CustomError = new Error(message)
+  for (const { status_code, message } of errorsData) {
+    if (status_code === error) {
+      /* const CustomError = new Error(message)
       CustomError.info = info
-      throw CustomError
+      throw CustomError */
+      return message
     }
   }
 
-  const defaultError = new Error('Неизвестная ошибка.')
+  /*   const defaultError = new Error('Неизвестная ошибка.')
   defaultError.info = 'Произошла ошибка, которую не удалось идентифицировать.'
-  throw defaultError
+  throw defaultError */
+  return 'Неизвестная ошибка.'
 }
 
 export default checkForErrors

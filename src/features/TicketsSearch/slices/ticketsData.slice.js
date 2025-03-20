@@ -30,24 +30,41 @@ export const fetchTicketsId = createAsyncThunk(
   }
 )
 
+let retryCount = 0
 export const fetchTicketsById = createAsyncThunk(
   'tickets/fetchData',
-  async (id, { extra }) => {
-    const response = await extra.api.getTicketsData(id)
-    const ticketsWithId = response.tickets.map((ticket) => {
-      return { ...ticket, id: uuidv4() }
-    })
+  async (id, { dispatch, extra, getState, rejectWithValue }) => {
+    try {
+      const response = await extra.api.getTicketsData(id)
+      const ticketsWithId = response.tickets.map((ticket) => ({
+        ...ticket,
+        id: uuidv4(),
+      }))
 
-    return { ...response, tickets: ticketsWithId }
+      dispatch(ticketsSlice.actions.addTickets(ticketsWithId))
+
+      if (!response.stop) {
+        dispatch(fetchTicketsById(id, { dispatch, extra, getState }))
+      }
+
+      return response.tickets
+    } catch (error) {
+      const maxRetries = 7
+      if (error.status === 500 && retryCount < maxRetries) {
+        retryCount += 1
+        dispatch(fetchTicketsById(id, { dispatch, extra, getState }))
+      } else {
+        retryCount = 0
+        return rejectWithValue(error.status)
+      }
+    }
   },
   {
-    condition: (params, { getState }) => {
+    condition: (id, { getState }) => {
       const searchId = ticketsSlice.selectors.selectTicketsSearchId(getState())
-      // const isIdle = ticketsSlice.selectors.selectIsFetchDataIdle(getState())
       const searchCompleted = ticketsSlice.selectors.selectTicketsSearchComplete(getState())
-      if (params && searchCompleted) return false
-      // if (params && !isIdle) return false
-      if (searchId !== params) return false
+      if (searchCompleted) return false
+      if (searchId !== id) return false
       return true
     },
   }
@@ -63,15 +80,19 @@ export const ticketsSlice = createSlice({
     setIsLoading: (state, action) => {
       state.isLoading = action.payload
     },
+    addTickets: (state, action) => {
+      state.entities.tickets = [...state.entities.tickets, ...action.payload]
+    },
+    setError: (state, action) => {
+      state.error = action.payload
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchTicketsById.pending, (state) => {
       state.fetchDataStatus = 'pending'
     }),
-      builder.addCase(fetchTicketsById.fulfilled, (state, action) => {
+      builder.addCase(fetchTicketsById.fulfilled, (state) => {
         state.fetchDataStatus = 'fulfilled'
-        state.entities.tickets = [...state.entities.tickets, ...action.payload.tickets]
-        state.entities.searchComplete = action.payload.stop
         state.isLoading = false
       }),
       builder.addCase(fetchTicketsById.rejected, (state, action) => {
@@ -102,6 +123,9 @@ export const ticketsSlice = createSlice({
 
     selectTicketsSearchId: (state) => state.searchId,
     selectTicketsSearchComplete: (state) => state.entities.searchComplete,
+
+    selectIsError: (state) => state.error,
+
     selectTicketsData: (state) => state.entities.tickets,
     selectIsLoading: (state) => state.isLoading,
   },
@@ -110,9 +134,11 @@ export const ticketsSlice = createSlice({
 export const selectIsFetchDataFulfilled = ticketsSlice.selectors.selectIsFetchDataFulfilled
 export const selectIsLoading = ticketsSlice.selectors.selectIsLoading
 export const selectTicketsData = ticketsSlice.selectors.selectTicketsData
+export const selectIsError = ticketsSlice.selectors.selectIsError
 
 export const setTicketsData = ticketsSlice.actions.setTicketsData
 export const setIsLoading = ticketsSlice.actions.setIsLoading
+export const setError = ticketsSlice.actions.setError
 
 export const selectFilteredTickets = createSelector(
   [selectTicketsData, selectCheckboxes],

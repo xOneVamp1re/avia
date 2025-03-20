@@ -1,47 +1,134 @@
 @use '../../../../style/vars.scss' as *;
 
-.transfer-filter {
-  display: flex;
-  flex: 0 0 auto;
-  flex-direction: column;
-  padding: 20px 40px 20px 20px;
-  border-radius: 5px;
-  background-color: $bg-accent-color;
-  color: $text-color;
-  row-gap: 20px;
-
-  &-title {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    line-height: 12px;
-    text-transform: uppercase;
-  }
-
-  &-list {
+@media (width >= 319.98px) {
+  .transfer-filter {
     display: flex;
+    position: absolute;
+    top: -35px;
+    left: -1px;
+    flex: 0 0 auto;
     flex-direction: column;
+    align-self: flex-start;
+    padding: 7px;
+    border: 1px solid #dfe5ec;
+    border-radius: 10px;
+    background-color: $bg-accent-color;
+    color: $text-color;
+    row-gap: 7px;
 
-    &-item {
+    &-title {
+      position: relative;
+      left: -7px;
+      width: 120px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      line-height: 10px;
+      text-transform: uppercase;
+    }
+
+    &-title::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 10px;
+      width: 0;
+      height: 0;
+      transform: translateY(50%) rotate(0);
+      border-top: 5px solid black;
+      border-right: 5px solid transparent;
+      border-left: 5px solid transparent;
+    }
+
+    &-title-active::after {
+      top: 5px;
+      right: 10px;
+      transform: translateY(-50%) rotate(180deg);
+    }
+
+    &-list {
       display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 10px 0;
-      font-size: 14px;
-      font-weight: 400;
-      letter-spacing: 0;
-      line-height: 20px;
-      cursor: pointer;
+      flex-direction: column;
 
-      &-checkbox {
-        width: 20px;
-        height: 20px;
+      &-item {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 7px 0;
+        font-size: 13px;
+        font-weight: 400;
+        letter-spacing: 0;
+        line-height: 15px;
         cursor: pointer;
-      }
 
-      &-label {
-        padding-left: 10px;
-        user-select: none;
+        &-checkbox {
+          width: 15px;
+          height: 15px;
+          cursor: pointer;
+        }
+
+        &-label {
+          width: 100%;
+          padding-left: 10px;
+          user-select: none;
+        }
+      }
+    }
+  }
+}
+
+@media (width >= 767.98px) {
+  .transfer-filter {
+    display: flex;
+    position: static;
+    flex: 0 0 auto;
+    flex-direction: column;
+    padding: 20px 40px 20px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: $bg-accent-color;
+    color: $text-color;
+    row-gap: 20px;
+
+    &-title {
+      left: 0;
+      width: initial;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      line-height: 12px;
+      text-transform: uppercase;
+    }
+
+    &-title::after {
+      content: none;
+    }
+
+    &-list {
+      display: flex;
+      flex-direction: column;
+
+      &-item {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 10px 0;
+        font-size: 14px;
+        font-weight: 400;
+        letter-spacing: 0;
+        line-height: 20px;
+        cursor: pointer;
+
+        &-checkbox {
+          width: 20px;
+          height: 20px;
+          cursor: pointer;
+        }
+
+        &-label {
+          padding-left: 10px;
+          user-select: none;
+        }
       }
     }
   }
