@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useRef } from 'react'
 
 import { useOutsideClick } from '../../../../shared/hooks/useOutsideClick'
