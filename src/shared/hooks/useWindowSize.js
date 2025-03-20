@@ -1,20 +1,23 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useLayoutEffect } from 'react'
 
 export const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 0,
-    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+    width: window.innerWidth,
+    height: window.innerHeight,
   })
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleResize = () => {
       setWindowSize({
         width: window.innerWidth,
         height: window.innerHeight,
       })
     }
+
+    // Устанавливаем начальные значения сразу после монтирования
+    handleResize()
 
     window.addEventListener('resize', handleResize)
     return () => {

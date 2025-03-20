@@ -1,7 +1,8 @@
 'use client'
+import dynamic from 'next/dynamic'
 
 import useOnlineStatus from '../shared/hooks/useOnlineStatus'
-import TicketsSearch from '../features/TicketsSearch/TicketsSearch'
+export const TicketsSearch = dynamic(() => import('../features/TicketsSearch/TicketsSearch'), { ssr: false })
 
 export default function Home() {
   const isOnline = useOnlineStatus()

@@ -5,7 +5,7 @@ import { selectTicketsData } from '../../slices/ticketsData.slice'
 export const ProgressBar = () => {
   const ticketsDataLength = useSelector(selectTicketsData).length
   const percentProgress = (ticketsDataLength / 10873) * 100
-  console.log(Math.ceil(percentProgress))
+
   return (
     percentProgress <= 100 && (
       <div style={{ width: '100%', backgroundColor: '#e0e0e0', borderRadius: '5px', position: 'relative' }}>

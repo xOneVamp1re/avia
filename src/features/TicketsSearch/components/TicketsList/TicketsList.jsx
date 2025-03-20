@@ -12,11 +12,16 @@ const TicketsList = () => {
   const sortedTickets = useSelector(selectSortedTickets)
   const isError = useSelector(selectIsError)
 
+  const hasTickets = sortedTickets.length > 0
+
   const loadMoreTickets = () => {
     setVisibleTickets((prev) => prev + 5)
   }
 
-  return sortedTickets.length > 0 && !isError ? (
+  if (isError) return <p className={styles['tickets-list-not-results']}>{checkForErrors(isError)}</p>
+  if (!hasTickets) return <p className={styles['tickets-list-not-results']}>Билетов по вашему запросу не найдено.</p>
+
+  return (
     <>
       <ul className={styles['tickets-list']}>
         {sortedTickets.slice(0, visibleTickets).map((ticket) => {
@@ -27,10 +32,6 @@ const TicketsList = () => {
         Показать еще 5 билетов
       </button>
     </>
-  ) : isError ? (
-    <p className={styles['tickets-list-not-results']}>{checkForErrors(isError)}</p>
-  ) : (
-    <p className={styles['tickets-list-not-results']}>Билетов по вашему запросу не найдено.</p>
   )
 }
 
