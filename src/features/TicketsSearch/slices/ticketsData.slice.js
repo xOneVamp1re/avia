@@ -163,10 +163,7 @@ export const selectFilteredTickets = createSelector(
 
       return transferConditions.some(({ active, count }) => {
         if (!active) return false
-        return (
-          (outboundTransfers === count && returnTransfers <= count) ||
-          (returnTransfers === count && outboundTransfers <= count)
-        )
+        return outboundTransfers === count || returnTransfers === count
       })
     })
   }
